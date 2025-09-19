@@ -32,7 +32,6 @@
       overflow:hidden;
     }
 
-    /* --- Hero --- */
     .wrap{
       position:relative;
       height:100%;
@@ -84,7 +83,6 @@
       background:#1c2048; color:#e6e8ff; box-shadow: inset 0 0 0 1px #3f46a7;
     }
 
-    /* --- Jardín y suelo --- */
     .garden{
       position:absolute; inset:0; z-index:1; pointer-events:none;
       filter: drop-shadow(0 6px 12px #0006);
@@ -98,7 +96,6 @@
       z-index:0;
     }
 
-    /* Suaves glows detrás */
     .glow{
       position:absolute; inset:0; z-index:0; pointer-events:none;
     }
@@ -110,45 +107,24 @@
     .glow::before{ width:520px; height:520px; top:10%; left:-120px; animation-delay: .8s}
     .glow::after { width:420px; height:420px; bottom:-60px; right:-60px; animation-delay: 1.6s}
 
-    /* Animaciones base */
-    @keyframes floatY {
-      0%,100%{ transform: translateY(0) }
-      50%{ transform: translateY(-14px) }
-    }
-    @keyframes sway {
-      0%,100%{ transform: rotate(-2deg) }
-      50%{ transform: rotate(2deg) }
-    }
     @keyframes twinkle {
       0%,100%{ opacity:.65; filter: blur(0px) }
       50%{ opacity:1; filter: blur(0.2px) }
     }
 
-    /* Flor dinámica */
     svg.flower{
-      position:absolute; width:200px; height:200px;
+      position:absolute; width:200px; height:220px;
       transform-origin: 50% 80%;
       will-change: transform, opacity;
       opacity:0;
     }
-    /* Animación de “brotar del suelo” */
-    @keyframes bloomRise {
-      0%   { transform: translateY(40vh) scale(.6) rotate(var(--r)); opacity:0 }
-      60%  { opacity:1 }
-      100% { transform: translateY(0) scale(1) rotate(var(--r)) }
-    }
-    /* Apertura de pétalos (zoom sutil del grupo) */
-    @keyframes petalOpen {
-      0%   { transform: scale(.72) }
-      100% { transform: scale(1) }
-    }
 
-    /* Mensaje flotante */
     .ribbon{
       position:absolute; top:10px; right:10px; z-index:4;
       padding:8px 14px; border-radius:999px;
       background:#0f1130cc; backdrop-filter: blur(8px);
       border:1px solid #ffffff22; font-size:12px; letter-spacing:.3px;
+      transition: opacity .35s ease, transform .35s ease, visibility .35s ease;
     }
 
     .credits{
@@ -161,7 +137,6 @@
       overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
     }
 
-    /* Botón volver */
     .backbar{
       position:fixed; left:50%; transform:translateX(-50%);
       bottom:18px; z-index:4; display:none;
@@ -171,6 +146,12 @@
       appearance:none; border:0; cursor:pointer; padding:10px 14px; border-radius:12px;
       background:#141842; color:#e6e8ff; box-shadow: inset 0 0 0 1px #3f46a7;
       font-weight:600;
+    }
+
+    /* Ocultar con transición */
+    .hidden-soft{
+      opacity:0; visibility:hidden; transform: translateY(-6px) scale(.98);
+      transition: opacity .35s ease, transform .35s ease, visibility .35s ease;
     }
   </style>
 </head>
@@ -186,63 +167,13 @@
         <button class="btn" id="bloomBtn">Hacer florecer ✨</button>
         <button class="btn secondary" id="msgBtn" aria-controls="mensaje" aria-expanded="false">Mostrar mensaje 💬</button>
       </div>
-      <p id="mensaje" class="sub" style="display:none;margin-top:14px">
+      <p id="mensaje" class="sub" style="margin-top:14px">
         Que hoy te pase algo <b>amarillo</b>: brillante, cálido y lleno de buena suerte. 🌻
       </p>
     </div>
 
-    <!-- Jardín -->
     <div class="garden" id="garden" aria-hidden="true">
       <div class="ground" aria-hidden="true"></div>
-
-      <!-- Definición de flor como símbolo reutilizable -->
-      <svg width="0" height="0" style="position:absolute">
-        <defs>
-          <symbol id="flowerSymbol" viewBox="0 0 200 200">
-            <g transform="translate(100,140)">
-              <!-- Tallo -->
-              <rect x="-3" y="-10" width="6" height="70" rx="3" fill="var(--stem)"/>
-              <!-- Hojas -->
-              <path d="M-3,20 C-40,10 -50,40 -6,34 Z" fill="var(--stem)" opacity=".9"/>
-              <path d="M3,36 C36,28 50,54 6,48 Z" fill="var(--stem)" opacity=".85"/>
-
-              <!-- Pétalos (12) -->
-              <g id="petalos" style="transform-origin:0px -60px">
-                <defs>
-                  <path id="petalo" d="M0,-60 C12,-50 12,-20 0,0 C-12,-20 -12,-50 0,-60Z" />
-                </defs>
-                <g fill="url(#gradPetalo)" stroke="var(--accent-2)" stroke-width="1.5">
-                  <use href="#petalo" transform="rotate(0)"/>
-                  <use href="#petalo" transform="rotate(30)"/>
-                  <use href="#petalo" transform="rotate(60)"/>
-                  <use href="#petalo" transform="rotate(90)"/>
-                  <use href="#petalo" transform="rotate(120)"/>
-                  <use href="#petalo" transform="rotate(150)"/>
-                  <use href="#petalo" transform="rotate(180)"/>
-                  <use href="#petalo" transform="rotate(210)"/>
-                  <use href="#petalo" transform="rotate(240)"/>
-                  <use href="#petalo" transform="rotate(270)"/>
-                  <use href="#petalo" transform="rotate(300)"/>
-                  <use href="#petalo" transform="rotate(330)"/>
-                </g>
-              </g>
-
-              <!-- Centro -->
-              <circle r="16" cy="-8" fill="var(--center)" stroke="#5d4037" stroke-width="2"/>
-              <circle r="10" cy="-8" fill="#6d4c41" opacity=".35"/>
-              <!-- Brillo -->
-              <circle r="4" cx="8" cy="-14" fill="var(--glow)" opacity=".9"/>
-            </g>
-          </symbol>
-
-          <!-- Gradiente pétalos -->
-          <radialGradient id="gradPetalo" cx="50%" cy="30%" r="70%">
-            <stop offset="0%" stop-color="#fff59d"/>
-            <stop offset="45%" stop-color="var(--accent)"/>
-            <stop offset="100%" stop-color="#e6ac00"/>
-          </radialGradient>
-        </defs>
-      </svg>
     </div>
 
     <span class="sr-only">Animación de flores amarillas brotando del suelo y balanceándose.</span>
@@ -262,6 +193,7 @@
     const garden   = document.getElementById('garden');
     const backbar  = document.getElementById('backbar');
     const resetBtn = document.getElementById('resetBtn');
+    const ribbon   = document.querySelector('.ribbon');
 
     let blooming = false;
 
@@ -276,84 +208,118 @@
       showMessage(open);
     });
 
-    // Flores
-    function createFlowers(count = 32){
-      const width = garden.clientWidth;
+    function createFlowers(count = 36){
+      const width  = garden.clientWidth;
       const height = garden.clientHeight;
-      const minY = height * 0.38; // zona de suelo
-      const maxY = height * 0.64;
+      const groundTop = height * 0.62;
 
       for(let i=0; i<count; i++){
-        const x = Math.round( (i + Math.random()*0.7) / count * (width - 40) ) + 20; // distribuido a lo ancho
-        const y = Math.round( minY + Math.random() * (maxY - minY) );               // en el suelo
-        const scale = 0.8 + Math.random()*0.7;                                       // tamaños variados
-        const rot = (Math.random()*6 - 3) + 'deg';                                   // leve inclinación
-        const swayDur = 5.2 + Math.random()*2.2;                                     // balanceo distinto
-        const floatDur = 6.0 + Math.random()*2.0;
+        const x = Math.round( (i + Math.random()*0.7) / count * (width - 40) ) + 20;
+        const stemH = 100 + Math.floor(Math.random()*80);
+        const baseY = groundTop + 6 + Math.random()*18;
+        const scale = 0.85 + Math.random()*0.6;
+        const rot   = (Math.random()*6 - 3) + 'deg';
+        const delay = 60*i;
 
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('class', 'flower');
-        svg.setAttribute('viewBox', '0 0 200 200');
+        const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+        svg.setAttribute('class','flower');
+        svg.setAttribute('viewBox','0 0 200 220');
         svg.style.left = (x - 100) + 'px';
-        svg.style.top  = (y - 170) + 'px';
+        svg.style.top  = (baseY - 180) + 'px';
         svg.style.setProperty('--r', rot);
 
-        const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-        use.setAttributeNS('http://www.w3.org/1999/xlink','href','#flowerSymbol');
-        svg.appendChild(use);
+        const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+        g.setAttribute('transform','translate(100,180)');
+
+        const stem = document.createElementNS('http://www.w3.org/2000/svg','rect');
+        stem.setAttribute('x','-3');
+        stem.setAttribute('y', String(-stemH));
+        stem.setAttribute('width','6');
+        stem.setAttribute('height', String(stemH));
+        stem.setAttribute('rx','3');
+        stem.setAttribute('fill','var(--stem)');
+        g.appendChild(stem);
+
+        const leaf1 = document.createElementNS('http://www.w3.org/2000/svg','path');
+        leaf1.setAttribute('d', `M-3,${-stemH*0.45} C-40,${-stemH*0.55} -50,${-stemH*0.25} -6,${-stemH*0.30} Z`);
+        leaf1.setAttribute('fill','var(--stem)');
+        leaf1.setAttribute('opacity','.9');
+        g.appendChild(leaf1);
+
+        const leaf2 = document.createElementNS('http://www.w3.org/2000/svg','path');
+        leaf2.setAttribute('d', `M3,${-stemH*0.28} C36,${-stemH*0.36} 50,${-stemH*0.10} 6,${-stemH*0.16} Z`);
+        leaf2.setAttribute('fill','var(--stem)');
+        leaf2.setAttribute('opacity','.85');
+        g.appendChild(leaf2);
+
+        const petalsG = document.createElementNS('http://www.w3.org/2000/svg','g');
+        petalsG.setAttribute('id','petalos');
+        petalsG.setAttribute('style','transform-origin:0px -60px');
+        petalsG.setAttribute('transform', `translate(0, ${-stemH - 10})`);
+
+        const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+        const petalo = document.createElementNS('http://www.w3.org/2000/svg','path');
+        petalo.setAttribute('id','petalo');
+        petalo.setAttribute('d','M0,-60 C12,-50 12,-20 0,0 C-12,-20 -12,-50 0,-60Z');
+        defs.appendChild(petalo);
+        g.appendChild(defs);
+
+        const grad = document.createElementNS('http://www.w3.org/2000/svg','radialGradient');
+        const gradId = 'gradPetalo_' + Math.random().toString(36).slice(2,8);
+        grad.setAttribute('id', gradId);
+        grad.setAttribute('cx','50%'); grad.setAttribute('cy','30%'); grad.setAttribute('r','70%');
+        const s1 = document.createElementNS('http://www.w3.org/2000/svg','stop'); s1.setAttribute('offset','0%');  s1.setAttribute('stop-color','#fff59d');
+        const s2 = document.createElementNS('http://www.w3.org/2000/svg','stop'); s2.setAttribute('offset','45%'); s2.setAttribute('stop-color','var(--accent)');
+        const s3 = document.createElementNS('http://www.w3.org/2000/svg','stop'); s3.setAttribute('offset','100%'); s3.setAttribute('stop-color','#e6ac00');
+        const defs2 = document.createElementNS('http://www.w3.org/2000/svg','defs');
+        grad.appendChild(s1); grad.appendChild(s2); grad.appendChild(s3);
+        defs2.appendChild(grad);
+        svg.appendChild(defs2);
+
+        const ring = document.createElementNS('http://www.w3.org/2000/svg','g');
+        ring.setAttribute('fill', `url(#${gradId})`);
+        ring.setAttribute('stroke','var(--accent-2)');
+        ring.setAttribute('stroke-width','1.5');
+
+        for(let a=0; a<360; a+=30){
+          const u = document.createElementNS('http://www.w3.org/2000/svg','use');
+          u.setAttributeNS('http://www.w3.org/1999/xlink','href','#petalo');
+          u.setAttribute('transform',`rotate(${a})`);
+          ring.appendChild(u);
+        }
+        petalsG.appendChild(ring);
+
+        const c1 = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c1.setAttribute('r','16'); c1.setAttribute('cy', String(-stemH - 18));
+        c1.setAttribute('fill','var(--center)'); c1.setAttribute('stroke','#5d4037'); c1.setAttribute('stroke-width','2');
+        const c2 = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c2.setAttribute('r','10'); c2.setAttribute('cy', String(-stemH - 18));
+        c2.setAttribute('fill','#6d4c41'); c2.setAttribute('opacity','.35');
+
+        const glow = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        glow.setAttribute('r','4'); glow.setAttribute('cx','8'); glow.setAttribute('cy', String(-stemH - 24));
+        glow.setAttribute('fill','var(--glow)'); glow.setAttribute('opacity','.9');
+
+        g.appendChild(petalsG); g.appendChild(c1); g.appendChild(c2); g.appendChild(glow);
+        svg.appendChild(g);
         garden.appendChild(svg);
 
-        // Animaciones: brotar + abrir pétalos + flotar/sway sutil
         svg.animate([
           { transform: `translateY(40vh) scale(${0.6*scale}) rotate(var(--r))`, opacity: 0 },
           { transform: `translateY(0) scale(${scale}) rotate(var(--r))`, opacity: 1 }
-        ], { duration: 900 + i*28, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards' });
+        ], { duration: 900 + delay, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards' });
 
-        // Apertura de pétalos
-        const petals = svg.querySelector('#petalos');
-        if (petals) {
-          petals.animate([
-            { transform: 'scale(.72)' },
-            { transform: 'scale(1)' }
-          ], { duration: 700 + i*15, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards', delay: 80 });
-        }
+        petalsG.animate(
+          [{ transform:`translate(0, ${-stemH - 10}) scale(.72)` },
+           { transform:`translate(0, ${-stemH - 10}) scale(1)` }],
+          { duration: 700 + delay*0.2, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards', delay: 80 }
+        );
 
-        // Balanceo y flotación continuos
-        svg.animate([
-          { transform: `translateY(0) scale(${scale}) rotate(calc(var(--r) - 2deg))` },
-          { transform: `translateY(-10px) scale(${scale}) rotate(calc(var(--r) + 2deg))` },
-          { transform: `translateY(0) scale(${scale}) rotate(calc(var(--r) - 2deg))` }
-        ], { duration: (swayDur+floatDur)*500, iterations: Infinity, easing:'ease-in-out', delay: 900 + i*28 });
-      }
-    }
-
-    function clearFlowers(){
-      garden.querySelectorAll('svg.flower').forEach(el => el.remove());
-    }
-
-    function setBloom(open){
-      if(open){
-        // Oculta botones y muestra barra volver
-        btnGroup.classList.add('hidden');
-        backbar.classList.add('show');
-        createFlowers(40); // cantidad de flores
-      }else{
-        // Limpia y regresa botones
-        clearFlowers();
-        btnGroup.classList.remove('hidden');
-        backbar.classList.remove('show');
-      }
-      blooming = open;
-      bloomBtn.textContent = blooming ? 'Cerrar pétalos 🌙' : 'Hacer florecer ✨';
-    }
-
-    bloomBtn.addEventListener('click', ()=> setBloom(!blooming));
-    resetBtn.addEventListener('click', ()=> setBloom(false));
-
-    // Entrada suave
-    window.addEventListener('load', ()=>{
-      setTimeout(()=> showMessage(true), 500);
-    });
-  </script>
-</body>
-</html>
+        const swayDur = 5200 + Math.random()*2200;
+        svg.animate(
+          [
+            { transform: `translateY(0) scale(${scale}) rotate(calc(var(--r) - 2deg))` },
+            { transform: `translateY(-10px) scale(${scale}) rotate(calc(var(--r) + 2deg))` },
+            { transform: `translateY(0) scale(${scale}) rotate(calc(var(--r) - 2deg))` }
+          ],
+          { duration: swayDur, iterations: Infinity, easing:'ease-in-out', delay: 900 +
