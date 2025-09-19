@@ -1,396 +1,215 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Flores Amarillas — Ramo</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg1:#0f1020;
-      --bg2:#171a35;
-      --accent:#FFD54F;     /* pétalos */
-      --accent-2:#FFC107;   /* borde pétalo */
-      --center:#8D6E63;     /* centro */
-      --stem:#2e7d32;       /* tallo/hojas */
-      --glow:#fff59d;
-      --card:#101225cc;
-      --white:#f8fafc;
-      --ground:#0c0f22;
-      --ribbon:#ff7a7a;     /* moño */
-      --paper:#f7e9b0cc;    /* papel kraft */
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;
-      color:var(--white);
-      background:
-        radial-gradient(1200px 800px at 80% -20%, #2b2f7a33, transparent 60%),
-        radial-gradient(900px 600px at -10% 20%, #b388ff1a, transparent 60%),
-        linear-gradient(180deg,var(--bg1),var(--bg2));
-      overflow:hidden;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jardin de tulipanes</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky1:#bfe8ff; --sky2:#eef9ff; --sun:#FFD54F;
+    --grass1:#9bd17a; --grass2:#6fbf63; --soil:#5f4634;
+    --stem:#2e7d32; --leaf:#43a047;
+    --yellow:#FFC107; --yellow-2:#FFD95A; --heart:#ffd1dc;
+  }
+  *{box-sizing:border-box} html,body{height:100%}
+  body{
+    margin:0; font-family:Poppins,system-ui,sans-serif; color:#0f1320;
+    background:linear-gradient(180deg,var(--sky1),var(--sky2) 55%,#e9fbff 70%);
+    overflow-x:hidden;
+  }
 
-    .wrap{
-      position:relative; height:100%;
-      display:grid; place-items:center; padding:24px; isolation:isolate;
-    }
+  /* Cielo */
+  .sun{position:absolute; top:40px; right:60px; width:120px; height:120px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #fff8e1 0 35%, var(--sun) 36% 70%, rgba(255,213,79,.6) 71% 100%);
+    box-shadow:0 0 80px 20px rgba(255,213,79,.45), inset 0 0 20px rgba(255,255,255,.6);
+    animation:pulse 6s ease-in-out infinite; z-index:1}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 
-    /* Tarjeta principal (se oculta al florecer) */
-    .card{
-      position:relative; max-width:min(820px, 92vw);
-      padding:clamp(20px, 4vw, 36px); border-radius:24px;
-      background:var(--card); backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px #0006, inset 0 0 0 1px #ffffff1a;
-      z-index:3; text-align:center;
-      transition: opacity .35s ease, transform .35s ease, visibility .35s ease;
-    }
-    .card.hidden-soft{ opacity:0; transform: translateY(-6px) scale(.98); visibility:hidden }
+  /* Tarjeta */
+  .card{
+    position:relative; max-width:980px; margin:40px auto 0; padding:28px 22px; text-align:center;
+    background:rgba(255,255,255,.58); backdrop-filter:blur(6px);
+    border-radius:22px; border:1px solid rgba(255,255,255,.8);
+    box-shadow:0 10px 30px rgba(0,0,0,.22); z-index:2;
+  }
+  .title{font-family:"Playfair Display",serif; font-weight:700; font-size:clamp(28px,4.2vw,46px); margin:0 0 6px}
+  .subtitle{font-weight:500; font-size:clamp(14px,2.2vw,18px); margin:0; opacity:.9}
+  .highlight{background:linear-gradient(90deg,#fff6a9,#ffe27a); padding:2px 8px; border-radius:10px}
+  .btn{appearance:none; border:none; cursor:pointer; margin-top:10px; padding:10px 16px; border-radius:12px; font-weight:600;
+       background:linear-gradient(90deg,#ffe082,#ffd54f); box-shadow:0 6px 20px rgba(255,193,7,.35)}
 
-    h1{ margin:0 0 8px; font-size:clamp(28px, 5.5vw, 52px); line-height:1.05; letter-spacing:0.2px; }
-    p.sub{ margin:0 0 18px; opacity:.9; font-weight:300; font-size:clamp(15px, 2.6vw, 18px) }
+  /* Jardín */
+  .garden{position:relative; width:100%; height:66vh; min-height:500px; overflow:hidden; margin-top:16px}
+  .soil{position:absolute; left:0; right:0; bottom:0; height:120px;
+    background:linear-gradient(180deg,#7a5a44,var(--soil)); z-index:2; display:flex; justify-content:center; align-items:center}
+  .grass{position:absolute; left:0; right:0; bottom:100px; height:140px; z-index:2;
+    background:repeating-linear-gradient(90deg,var(--grass2) 0 6px, var(--grass1) 6px 12px)}
 
-    .btns{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
-      transition: opacity .35s ease, transform .35s ease, visibility .35s ease }
-    .btns.hidden{ opacity:0; transform: translateY(8px) scale(.98); visibility:hidden; pointer-events:none }
-    .btn{
-      appearance:none; border:0; cursor:pointer; padding:12px 18px; border-radius:12px; font-weight:600;
-      color:#0a0a0a; background:linear-gradient(180deg,#ffe173,#ffc400);
-      box-shadow: 0 8px 20px #ffc10744, inset 0 -2px 0 #b28700;
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    .btn:hover{ transform: translateY(-2px) scale(1.02) }
-    .btn:active{ transform: translateY(0) scale(.98) }
-    .btn.secondary{ background:#1c2048; color:#e6e8ff; box-shadow: inset 0 0 0 1px #3f46a7 }
+  .layer{position:absolute; inset:0; z-index:3}
 
-    /* Cinta superior */
-    .ribbon{
-      position:absolute; top:10px; right:10px; z-index:4; padding:8px 14px; border-radius:999px;
-      background:#0f1130cc; backdrop-filter: blur(8px); border:1px solid #ffffff22; font-size:12px; letter-spacing:.3px;
-      transition: opacity .35s ease, transform .35s ease, visibility .35s ease;
-    }
-    .ribbon.hidden-soft{ opacity:0; transform: translateY(-6px) scale(.98); visibility:hidden }
+  /* Tulipanes */
+  .flower{
+    position:absolute; bottom:180px;
+    transform-origin:bottom center;
+    animation:sway 4.8s ease-in-out infinite, grow-in .9s ease-out both;
+    filter:drop-shadow(0 4px 8px rgba(0,0,0,.15));
+  }
+  @keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(var(--tilt,3deg))}}
+  @keyframes grow-in{from{opacity:0; transform:scale(.94) translateY(10px)} to{opacity:1; transform:scale(1) translateY(0)}}
 
-    /* Jardín/canvas */
-    .garden{ position:absolute; inset:0; z-index:1; pointer-events:none; filter: drop-shadow(0 6px 12px #0006); overflow:hidden }
-    .ground{
-      position:absolute; left:0; right:0; bottom:-10px; height:38%;
-      background:
-        radial-gradient(80% 120% at 50% 0%, #20325a40 0%, transparent 60%),
-        linear-gradient(180deg, transparent 0%, #0e1230 30%, var(--ground) 100%);
-      z-index:0;
-    }
+  .stem{width:6px; height:var(--h,200px);
+        background:linear-gradient(180deg,#2e7d32,#1b5e20);
+        margin:0 auto; border-radius:6px; position:relative}
+  .leaf{position:absolute; width:22px; height:30px;
+        background:radial-gradient(circle at 20% 20%, #9be7a1 0 30%, var(--leaf) 31% 100%);
+        border-radius:0 22px 22px 22px}
+  .leaf.l1{ left:6px; top:calc(var(--h)*.46); transform:rotate(25deg)}
+  .leaf.l2{ right:6px; top:calc(var(--h)*.66); transform:rotate(-35deg)}
 
-    /* Glows */
-    .glow{ position:absolute; inset:0; z-index:0; pointer-events:none }
-    .glow::before, .glow::after{
-      content:""; position:absolute; border-radius:50%;
-      background: radial-gradient(closest-side, #fff59d33, transparent 70%);
-      animation: twinkle 6s ease-in-out infinite;
-    }
-    .glow::before{ width:520px; height:520px; top:10%; left:-120px; animation-delay:.8s }
-    .glow::after { width:420px; height:420px; bottom:-60px; right:-60px; animation-delay:1.6s }
-    @keyframes twinkle{ 0%,100%{opacity:.65; filter:blur(0)} 50%{opacity:1; filter:blur(.2px)} }
+  .tulip .head{
+    --w: 54px; --h: 58px;
+    position:absolute; left:50%; top:-32px; transform:translate(-50%,-50%);
+    width:var(--w); height:var(--h);
+    background:radial-gradient(circle at 50% 0%, #fff8c6 0 28%, var(--yellow) 29% 100%);
+    border-radius:50% 50% 45% 45%;
+    clip-path:polygon(0 0,100% 0,100% 60%,80% 100%,50% 78%,20% 100%,0 60%);
+  }
+  .tulip .crown{
+    position:absolute; left:50%; top:-10px; transform:translateX(-50%);
+    width:60px; height:30px;
+    background:radial-gradient(circle at 50% 100%, var(--yellow-2) 0 40%, var(--yellow) 41% 100%);
+    clip-path:polygon(0 100%, 16% 0, 33% 100%, 50% 0, 66% 100%, 83% 0, 100% 100%);
+  }
 
-    /* SVG del ramo (nuevo) */
-    svg.bouquet{
-      position:absolute;
-      filter: drop-shadow(0 6px 12px #0006);
-      pointer-events:none;
-    }
+  /* Corazones */
+  .heart{--x:50%; position:absolute; left:var(--x); bottom:170px; width:20px; height:20px;
+    transform:translateX(-50%) rotate(-45deg); background:var(--heart); animation:floatUp 6s ease-in infinite; opacity:.85}
+  .heart:before,.heart:after{content:""; position:absolute; width:20px; height:20px; border-radius:50%; background:inherit}
+  .heart:before{top:-10px; left:0} .heart:after{left:10px; top:0}
+  @keyframes floatUp{0%{transform:translate(-50%,0) rotate(-45deg); opacity:0}10%{opacity:.9}100%{transform:translate(-50%,-220px) rotate(-45deg); opacity:0}}
 
-    /* Barra volver */
-    .backbar{ position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:4; display:none }
-    .backbar.show{ display:block }
-    .backbtn{ appearance:none; border:0; cursor:pointer; padding:10px 14px; border-radius:12px;
-      background:#141842; color:#e6e8ff; box-shadow: inset 0 0 0 1px #3f46a7; font-weight:600 }
-
-    .credits{ position:fixed; inset:auto 0 10px; display:flex; justify-content:center; font-size:12px; opacity:.7 }
-    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
-  </style>
+  /* Texto en la tierra */
+  .floating-note{
+    padding:10px 20px;
+    border-radius:999px;
+    background:rgba(255,255,255,.7);
+    backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,.8);
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
+    font-weight:700;
+    font-size:20px;
+    animation:bob 3s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{ transform:translateY(0) }
+    50%{ transform:translateY(-6px) }
+  }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="glow" aria-hidden="true"></div>
-    <div class="ribbon">❤️ Yazuri</div>
+  <!-- Tarjeta -->
+  <section class="card">
+    <h1 class="title">Un jardín de <span class="highlight">tulipanes amarillos</span> para ti 🌷</h1>
+    <p class="subtitle">Si los tulipanes pudieran hablar, seguro te dirían lo especial que eres ✨</p>
+    <button class="btn" id="toggleHearts">Lanzar corazoncitos</button>
+  </section>
 
-    <div class="card" id="card">
-      <h1>Para ti, un jardín de <span style="color:#ffe066;text-shadow:0 0 10px #ffe06655">flores amarillas</span></h1>
-      <p class="sub">Porque los detalles bonitos también se programan. Toca el botón para “florecer”.</p>
-      <div class="btns" id="btnGroup">
-        <button class="btn" id="bloomBtn">Hacer florecer ✨</button>
-        <button class="btn secondary" id="msgBtn" aria-controls="mensaje" aria-expanded="true">Ocultar mensaje 🙈</button>
-      </div>
-      <p id="mensaje" class="sub" style="margin-top:14px">
-        Que hoy te pase algo <b>amarillo</b>: brillante, cálido y lleno de buena suerte. 🌻
-      </p>
+  <!-- Jardín -->
+  <section class="garden" id="garden">
+    <div class="layer" id="layer"></div>
+    <div class="grass"></div>
+    <div class="soil">
+      <div class="floating-note">💛 Yazuri</div>
     </div>
+  </section>
 
-    <div class="garden" id="garden" aria-hidden="true">
-      <div class="ground" aria-hidden="true"></div>
-    </div>
+<script>
+  const garden = document.getElementById('garden');
+  const layer  = document.getElementById('layer');
+  const mql    = window.matchMedia('(max-width: 600px)'); // móvil
 
-    <span class="sr-only">Ramo de flores amarillas con tallos, hojas y moño.</span>
-  </div>
+  function createTulip(heightPx, scale=1){
+    const flower = document.createElement('div');
+    flower.className = 'flower tulip';
+    flower.style.setProperty('--h', heightPx + 'px');
+    flower.style.transform += ` scale(${scale})`;
 
-  <div class="backbar" id="backbar">
-    <button class="backbtn" id="resetBtn">Volver a los botones ↩️</button>
-  </div>
+    const stem = document.createElement('div'); stem.className = 'stem';
+    const l1 = document.createElement('div'); l1.className = 'leaf l1';
+    const l2 = document.createElement('div'); l2.className = 'leaf l2';
+    stem.appendChild(l1); stem.appendChild(l2);
 
-  <div class="credits">Hecho con HTML + CSS + SVG + JS • by tú 💫</div>
+    const head = document.createElement('div'); head.className = 'head';
+    const crown = document.createElement('div'); crown.className = 'crown';
+    head.appendChild(crown);
 
-  <script>
-    /* ===== refs ===== */
-    const bloomBtn = document.getElementById('bloomBtn');
-    const msgBtn   = document.getElementById('msgBtn');
-    const msg      = document.getElementById('mensaje');
-    const btnGroup = document.getElementById('btnGroup');
-    const ribbon   = document.querySelector('.ribbon');
-    const card     = document.getElementById('card');
+    flower.appendChild(stem);
+    flower.appendChild(head);
+    return flower;
+  }
 
-    const garden   = document.getElementById('garden');
-    const backbar  = document.getElementById('backbar');
-    const resetBtn = document.getElementById('resetBtn');
+  function clearLayer(){
+    while(layer.firstChild) layer.removeChild(layer.firstChild);
+  }
 
-    let blooming = false;
-    let resizeTimer = null;
+  function renderGarden(){
+    clearLayer();
 
-    /* ===== helpers ===== */
-    function showMessage(open){
-      msg.style.display = open ? 'block' : 'none';
-      msgBtn.setAttribute('aria-expanded', String(open));
-      msgBtn.textContent = open ? 'Ocultar mensaje 🙈' : 'Mostrar mensaje 💬';
-    }
-    function clearFlowers(){
-      garden.querySelectorAll('svg.bouquet').forEach(el => el.remove());
-    }
+    const isMobile = mql.matches;
+    // Desktop: 10 grandes + pequeñas intercaladas
+    // Móvil: solo 5 grandes
+    const bigN = isMobile ? 5 : 10;
+    const addSmall = !isMobile;
 
-    /* ===== bouquet =====
-       Ramo en un solo SVG con clip-path para mantener verdes dentro del papel
-    =============================================== */
-    function createBouquet(count = 18){
-      const width  = garden.clientWidth;
-      const height = garden.clientHeight;
-      const groundTop = height * 0.62;
+    const marginVW = isMobile ? 10 : 8;
+    const step = (100 - 2*marginVW) / (bigN - 1);
 
-      // Lienzo del ramo (un solo SVG centrado)
-      const stageW = Math.min(520, width * 0.85);
-      const stageH = 420;
-      const centerX = Math.round(width/2);
+    for(let i=0;i<bigN;i++){
+      const x = marginVW + i*step;
+      const baseH = isMobile ? 160 : 180;          // un poco más bajos en móvil
+      const bigTulip = createTulip(baseH + (i%2===0?14:-8), isMobile ? 0.95 : 1);
+      bigTulip.style.left = x + 'vw';
+      bigTulip.style.animationDelay = (i*0.06)+'s';
+      layer.appendChild(bigTulip);
 
-      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-      svg.classList.add('bouquet');
-      svg.setAttribute('viewBox', '0 0 520 420');
-      svg.style.left = (centerX - stageW/2) + 'px';
-      svg.style.top  = (groundTop - 240) + 'px';
-      svg.style.width  = stageW + 'px';
-      svg.style.height = stageH + 'px';
-
-      // ===== defs: clip del papel (cono más estilizado)
-      const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
-
-      // Cono del papel (más angosto y chvr)
-      const conePathD = 'M140,60 L380,60 L310,400 L210,400 Z';
-      const clip = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
-      clip.setAttribute('id','coneClip');
-      const coneShape = document.createElementNS('http://www.w3.org/2000/svg','path');
-      coneShape.setAttribute('d', conePathD);
-      clip.appendChild(coneShape);
-
-      defs.appendChild(clip);
-      svg.appendChild(defs);
-
-      // ===== capas
-      const gGreens = document.createElementNS('http://www.w3.org/2000/svg','g');
-      gGreens.setAttribute('clip-path','url(#coneClip)');
-
-      const gPaper  = document.createElementNS('http://www.w3.org/2000/svg','g');
-      const gHeads  = document.createElementNS('http://www.w3.org/2000/svg','g');
-
-      // ===== distribución horizontal de flores
-      const baseY = 340;                 // un poco más arriba
-      const clusterW = 420;              // más ancho para que respiren
-      const leftX  = (520 - clusterW)/2 + 50; // margen lateral agradable
-      const rightX = 520 - leftX;
-
-      for(let i=0;i<count;i++){
-        const t = (i + 0.5)/count;                 // 0..1
-        const spread = Math.sin(Math.PI*t) ** 0.85; // más denso al centro
-        const jitter = (Math.random()*2-1) * 0.07;  // leve aleatorio
-        const x = leftX + ( (spread + jitter) * (rightX - leftX) );
-
-        const stemH = 130 + Math.random()*70; // 130–200 (más corto)
-        const scale = 0.9 + Math.random()*0.45;
-        const rot   = (Math.random()*10 - 5);
-
-        // === Verdes (tallo + hojas) DENTRO del clip
-        const gGreen = document.createElementNS('http://www.w3.org/2000/svg','g');
-        gGreen.setAttribute('transform', `translate(${x}, ${baseY}) rotate(${rot}) scale(${scale})`);
-
-        const stem = document.createElementNS('http://www.w3.org/2000/svg','rect');
-        stem.setAttribute('x','-3'); stem.setAttribute('y', String(-stemH));
-        stem.setAttribute('width','6'); stem.setAttribute('height', String(stemH));
-        stem.setAttribute('rx','3'); stem.setAttribute('fill','var(--stem)');
-
-        const leaf1 = document.createElementNS('http://www.w3.org/2000/svg','path');
-        leaf1.setAttribute('d', `M-3,${-stemH*0.52} C-38,${-stemH*0.66} -50,${-stemH*0.36} -6,${-stemH*0.42} Z`);
-        leaf1.setAttribute('fill','var(--stem)'); leaf1.setAttribute('opacity','.9');
-
-        const leaf2 = document.createElementNS('http://www.w3.org/2000/svg','path');
-        leaf2.setAttribute('d', `M3,${-stemH*0.30} C36,${-stemH*0.42} 50,${-stemH*0.18} 6,${-stemH*0.22} Z`);
-        leaf2.setAttribute('fill','var(--stem)'); leaf2.setAttribute('opacity','.85');
-
-        gGreen.appendChild(stem); gGreen.appendChild(leaf1); gGreen.appendChild(leaf2);
-        gGreens.appendChild(gGreen);
-
-        // === Cabeza de flor (SIN clip, por encima del papel)
-        const gHead = document.createElementNS('http://www.w3.org/2000/svg','g');
-        gHead.setAttribute('transform', `translate(${x}, ${baseY - stemH - 14}) rotate(${rot}) scale(${scale})`);
-
-        // pétalo base
-        const petalo = document.createElementNS('http://www.w3.org/2000/svg','path');
-        petalo.setAttribute('id', `petalo_${i}`);
-        petalo.setAttribute('d','M0,-60 C12,-50 12,-20 0,0 C-12,-20 -12,-50 0,-60Z');
-
-        // gradiente propio (evita colisión de IDs)
-        const grad = document.createElementNS('http://www.w3.org/2000/svg','radialGradient');
-        const gradId = 'gradPetalo_' + Math.random().toString(36).slice(2,8);
-        grad.setAttribute('id', gradId);
-        grad.setAttribute('cx','50%'); grad.setAttribute('cy','30%'); grad.setAttribute('r','70%');
-        [['0%','#fff59d'],['45%','var(--accent)'],['100%','#e6ac00']].forEach(([o,c])=>{
-          const s = document.createElementNS('http://www.w3.org/2000/svg','stop');
-          s.setAttribute('offset',o); s.setAttribute('stop-color',c); grad.appendChild(s);
-        });
-        defs.appendChild(grad);
-
-        const ring = document.createElementNS('http://www.w3.org/2000/svg','g');
-        ring.setAttribute('fill', `url(#${gradId})`);
-        ring.setAttribute('stroke','var(--accent-2)');
-        ring.setAttribute('stroke-width','1.5');
-        for(let a=0;a<360;a+=30){
-          const u = document.createElementNS('http://www.w3.org/2000/svg','use');
-          u.setAttributeNS('http://www.w3.org/1999/xlink','href', `#${petalo.id}`);
-          u.setAttribute('transform',`rotate(${a})`);
-          ring.appendChild(u);
-        }
-        gHead.appendChild(petalo);
-        gHead.appendChild(ring);
-
-        // centro + brillo
-        const c1 = document.createElementNS('http://www.w3.org/2000/svg','circle');
-        c1.setAttribute('r','16'); c1.setAttribute('cy','-22');
-        c1.setAttribute('fill','var(--center)'); c1.setAttribute('stroke','#5d4037'); c1.setAttribute('stroke-width','2');
-        const c2 = document.createElementNS('http://www.w3.org/2000/svg','circle');
-        c2.setAttribute('r','10'); c2.setAttribute('cy','-22');
-        c2.setAttribute('fill','#6d4c41'); c2.setAttribute('opacity','.35');
-        const glow = document.createElementNS('http://www.w3.org/2000/svg','circle');
-        glow.setAttribute('r','4'); glow.setAttribute('cx','8'); glow.setAttribute('cy','-28');
-        glow.setAttribute('fill','var(--glow)'); glow.setAttribute('opacity','.9');
-
-        gHead.appendChild(c1); gHead.appendChild(c2); gHead.appendChild(glow);
-        gHeads.appendChild(gHead);
-
-        // balanceo chill
-        const swayDur = 4800 + Math.random()*2200;
-        gHead.animate(
-          [
-            { transform:`translate(${x}px, ${baseY - stemH - 14}px) rotate(${rot-2}deg) scale(${scale})` },
-            { transform:`translate(${x}px, ${baseY - stemH - 24}px) rotate(${rot+2}deg) scale(${scale})` },
-            { transform:`translate(${x}px, ${baseY - stemH - 14}px) rotate(${rot-2}deg) scale(${scale})` }
-          ],
-          { duration: swayDur, iterations: Infinity, easing:'ease-in-out', delay: 400 + i*40 }
-        );
+      if(addSmall && i<bigN-1){
+        const midX = x + step/2;
+        const smallTulip = createTulip(120 + (i%2===0?-5:10), 0.75);
+        smallTulip.style.left = midX + 'vw';
+        smallTulip.style.animationDelay = (i*0.06 + 0.03)+'s';
+        layer.appendChild(smallTulip);
       }
-
-      // ===== papel (entre verdes y cabezas)
-      const paper = document.createElementNS('http://www.w3.org/2000/svg','path');
-      paper.setAttribute('d', conePathD);
-      paper.setAttribute('fill','var(--paper)');
-      paper.setAttribute('stroke','#e7d997'); paper.setAttribute('stroke-width','2');
-      paper.setAttribute('opacity','0.9');
-      gPaper.appendChild(paper);
-
-      // ===== cinta (ajustada al cono nuevo)
-      const band = document.createElementNS('http://www.w3.org/2000/svg','rect');
-      band.setAttribute('x','195'); band.setAttribute('y','245');
-      band.setAttribute('width','130'); band.setAttribute('height','22'); band.setAttribute('rx','11');
-      band.setAttribute('fill','var(--ribbon)');
-
-      const bowL = document.createElementNS('http://www.w3.org/2000/svg','path');
-      bowL.setAttribute('d','M220,257 C200,231 190,231 185,257 C190,277 205,277 220,257 Z');
-      bowL.setAttribute('fill','var(--ribbon)');
-      const bowR = document.createElementNS('http://www.w3.org/2000/svg','path');
-      bowR.setAttribute('d','M290,257 C310,231 320,231 325,257 C320,277 305,277 290,257 Z');
-      bowR.setAttribute('fill','var(--ribbon)');
-      const knot = document.createElementNS('http://www.w3.org/2000/svg','circle');
-      knot.setAttribute('cx','260'); knot.setAttribute('cy','257'); knot.setAttribute('r','10');
-      knot.setAttribute('fill','#ff6868');
-
-      const tail1 = document.createElementNS('http://www.w3.org/2000/svg','path');
-      tail1.setAttribute('d','M250,267 L238,305 L258,285 Z');
-      tail1.setAttribute('fill','var(--ribbon)');
-      const tail2 = document.createElementNS('http://www.w3.org/2000/svg','path');
-      tail2.setAttribute('d','M270,267 L282,305 L262,285 Z');
-      tail2.setAttribute('fill','var(--ribbon)');
-
-      // ===== orden de capas dentro del SVG
-      svg.appendChild(gGreens);   // 1) verdes recortados al cono
-      svg.appendChild(gPaper);    // 2) papel
-      svg.appendChild(band);      // 3) banda
-      svg.appendChild(bowL); svg.appendChild(bowR); svg.appendChild(knot);
-      svg.appendChild(tail1); svg.appendChild(tail2);
-      svg.appendChild(gHeads);    // 4) cabezas por encima
-
-      garden.appendChild(svg);
-
-      // pequeña entrada del conjunto
-      svg.animate([{opacity:0, transform:'translateY(20px)'},{opacity:1, transform:'translateY(0)'}],
-        {duration:600, easing:'ease-out', fill:'forwards'});
     }
+  }
 
-    /* ===== control ===== */
-    function setBloom(open){
-      if(open){
-        // ocultar todo lo “flotante”
-        document.getElementById('btnGroup').classList.add('hidden');
-        document.querySelector('.ribbon').classList.add('hidden-soft');
-        document.getElementById('card').classList.add('hidden-soft');
-        backbar.classList.add('show');
-        clearFlowers();
-        createBouquet(18); // ramo
-      }else{
-        clearFlowers();
-        document.getElementById('btnGroup').classList.remove('hidden');
-        document.querySelector('.ribbon').classList.remove('hidden-soft');
-        document.getElementById('card').classList.remove('hidden-soft');
-        backbar.classList.remove('show');
-        showMessage(true);
-      }
-      blooming = open;
-      bloomBtn.textContent = blooming ? 'Cerrar pétalos 🌙' : 'Hacer florecer ✨';
-    }
+  // Primera render
+  renderGarden();
 
-    /* ===== events ===== */
-    bloomBtn.addEventListener('click', ()=> setBloom(!blooming));
-    resetBtn.addEventListener('click', ()=> setBloom(false));
+  // Re-render al cambiar tamaño/orientación
+  mql.addEventListener ? mql.addEventListener('change', renderGarden)
+                       : mql.addListener(renderGarden);
+  window.addEventListener('orientationchange', renderGarden);
+  window.addEventListener('resize', (()=> {
+    let t; return ()=>{ clearTimeout(t); t=setTimeout(renderGarden,150); };
+  })());
 
-    msgBtn.addEventListener('click', ()=>{
-      const open = msg.style.display === 'none';
-      showMessage(open);
-    });
-
-    // si cambia tamaño, rearmar el ramo
-    window.addEventListener('resize', ()=>{
-      if(!blooming) return;
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(()=>{ clearFlowers(); createBouquet(18); }, 120);
-    });
-
-    // inicio
-    window.addEventListener('load', ()=> showMessage(true));
-  </script>
+  // Corazones
+  const btn = document.getElementById('toggleHearts');
+  let heartsOn=false, timer=null;
+  function spawnHeart(){
+    const h = document.createElement('div');
+    h.className='heart';
+    h.style.setProperty('--x', (10+Math.random()*80)+'%');
+    h.style.animationDuration = (4+Math.random()*3)+'s';
+    garden.appendChild(h);
+    setTimeout(()=>h.remove(),8000);
+  }
+  btn.addEventListener('click', ()=>{
+    heartsOn = !heartsOn;
+    btn.textContent = heartsOn ? 'Detener corazoncitos' : 'Lanzar corazoncitos';
+    if(heartsOn){ spawnHeart(); timer=setInterval(spawnHeart,900) } else { clearInterval(timer) }
+  });
+</script>
 </body>
 </html>
