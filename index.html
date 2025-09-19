@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Flores Amarillas — Detalle Web</title>
+  <title>Flores Amarillas — Ramo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
   <style>
@@ -12,12 +12,14 @@
       --bg2:#171a35;
       --accent:#FFD54F;     /* pétalos */
       --accent-2:#FFC107;   /* borde pétalo */
-      --center:#8D6E63;     /* centro de la flor */
+      --center:#8D6E63;     /* centro */
       --stem:#2e7d32;       /* tallo/hojas */
       --glow:#fff59d;
       --card:#101225cc;
       --white:#f8fafc;
       --ground:#0c0f22;
+      --ribbon:#ff7a7a;     /* moño */
+      --paper:#f7e9b0cc;    /* papel kraft */
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -32,66 +34,48 @@
       overflow:hidden;
     }
 
-    /* --- Layout principal --- */
     .wrap{
-      position:relative;
-      height:100%;
-      display:grid;
-      place-items:center;
-      padding:24px;
-      isolation:isolate;
-    }
-    .card{
-      position:relative;
-      max-width:min(820px, 92vw);
-      padding:clamp(20px, 4vw, 36px);
-      border-radius:24px;
-      background:var(--card);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px #0006, inset 0 0 0 1px #ffffff1a;
-      z-index:3;
-      text-align:center;
-    }
-    h1{
-      margin:0 0 8px;
-      font-size:clamp(28px, 5.5vw, 52px);
-      line-height:1.05;
-      letter-spacing:0.2px;
-    }
-    p.sub{
-      margin:0 0 18px;
-      opacity:.9;
-      font-weight:300;
-      font-size:clamp(15px, 2.6vw, 18px);
+      position:relative; height:100%;
+      display:grid; place-items:center; padding:24px; isolation:isolate;
     }
 
-    /* Botones */
-    .btns{
-      display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+    /* Tarjeta principal (se oculta al florecer) */
+    .card{
+      position:relative; max-width:min(820px, 92vw);
+      padding:clamp(20px, 4vw, 36px); border-radius:24px;
+      background:var(--card); backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px #0006, inset 0 0 0 1px #ffffff1a;
+      z-index:3; text-align:center;
       transition: opacity .35s ease, transform .35s ease, visibility .35s ease;
     }
-    .btns.hidden{
-      opacity:0; transform: translateY(8px) scale(.98); visibility:hidden; pointer-events:none;
-    }
+    .card.hidden-soft{ opacity:0; transform: translateY(-6px) scale(.98); visibility:hidden }
+
+    h1{ margin:0 0 8px; font-size:clamp(28px, 5.5vw, 52px); line-height:1.05; letter-spacing:0.2px; }
+    p.sub{ margin:0 0 18px; opacity:.9; font-weight:300; font-size:clamp(15px, 2.6vw, 18px) }
+
+    .btns{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+      transition: opacity .35s ease, transform .35s ease, visibility .35s ease }
+    .btns.hidden{ opacity:0; transform: translateY(8px) scale(.98); visibility:hidden; pointer-events:none }
     .btn{
-      appearance:none; border:0; cursor:pointer;
-      padding:12px 18px; border-radius:12px; font-weight:600;
+      appearance:none; border:0; cursor:pointer; padding:12px 18px; border-radius:12px; font-weight:600;
       color:#0a0a0a; background:linear-gradient(180deg,#ffe173,#ffc400);
       box-shadow: 0 8px 20px #ffc10744, inset 0 -2px 0 #b28700;
       transition: transform .12s ease, box-shadow .12s ease;
     }
-    .btn:hover{ transform: translateY(-2px) scale(1.02); }
-    .btn:active{ transform: translateY(0) scale(.98); }
-    .btn.secondary{
-      background:#1c2048; color:#e6e8ff; box-shadow: inset 0 0 0 1px #3f46a7;
-    }
+    .btn:hover{ transform: translateY(-2px) scale(1.02) }
+    .btn:active{ transform: translateY(0) scale(.98) }
+    .btn.secondary{ background:#1c2048; color:#e6e8ff; box-shadow: inset 0 0 0 1px #3f46a7 }
 
-    /* Jardín y suelo */
-    .garden{
-      position:absolute; inset:0; z-index:1; pointer-events:none;
-      filter: drop-shadow(0 6px 12px #0006);
-      overflow:hidden;
+    /* Cinta superior */
+    .ribbon{
+      position:absolute; top:10px; right:10px; z-index:4; padding:8px 14px; border-radius:999px;
+      background:#0f1130cc; backdrop-filter: blur(8px); border:1px solid #ffffff22; font-size:12px; letter-spacing:.3px;
+      transition: opacity .35s ease, transform .35s ease, visibility .35s ease;
     }
+    .ribbon.hidden-soft{ opacity:0; transform: translateY(-6px) scale(.98); visibility:hidden }
+
+    /* Jardín/canvas */
+    .garden{ position:absolute; inset:0; z-index:1; pointer-events:none; filter: drop-shadow(0 6px 12px #0006); overflow:hidden }
     .ground{
       position:absolute; left:0; right:0; bottom:-10px; height:38%;
       background:
@@ -100,67 +84,28 @@
       z-index:0;
     }
 
-    /* Glows suaves */
-    .glow{
-      position:absolute; inset:0; z-index:0; pointer-events:none;
-    }
+    /* Glows */
+    .glow{ position:absolute; inset:0; z-index:0; pointer-events:none }
     .glow::before, .glow::after{
       content:""; position:absolute; border-radius:50%;
       background: radial-gradient(closest-side, #fff59d33, transparent 70%);
       animation: twinkle 6s ease-in-out infinite;
     }
-    .glow::before{ width:520px; height:520px; top:10%; left:-120px; animation-delay: .8s}
-    .glow::after { width:420px; height:420px; bottom:-60px; right:-60px; animation-delay: 1.6s}
+    .glow::before{ width:520px; height:520px; top:10%; left:-120px; animation-delay:.8s }
+    .glow::after { width:420px; height:420px; bottom:-60px; right:-60px; animation-delay:1.6s }
+    @keyframes twinkle{ 0%,100%{opacity:.65; filter:blur(0)} 50%{opacity:1; filter:blur(.2px)} }
 
-    @keyframes twinkle {
-      0%,100%{ opacity:.65; filter: blur(0px) }
-      50%{ opacity:1; filter: blur(0.2px) }
-    }
+    /* Flor individual */
+    svg.flower{ position:absolute; width:200px; height:240px; transform-origin: 50% 85%; will-change: transform, opacity; opacity:0 }
 
-    /* Flor dinámica */
-    svg.flower{
-      position:absolute; width:200px; height:220px;
-      transform-origin: 50% 80%;
-      will-change: transform, opacity;
-      opacity:0;
-    }
-
-    /* Cinta */
-    .ribbon{
-      position:absolute; top:10px; right:10px; z-index:4;
-      padding:8px 14px; border-radius:999px;
-      background:#0f1130cc; backdrop-filter: blur(8px);
-      border:1px solid #ffffff22; font-size:12px; letter-spacing:.3px;
-      transition: opacity .35s ease, transform .35s ease, visibility .35s ease;
-    }
-
-    /* Footer y accesibilidad */
-    .credits{
-      position:fixed; inset:auto 0 10px; display:flex; justify-content:center;
-      font-size:12px; opacity:.7;
-    }
-    .sr-only{
-      position:absolute; width:1px; height:1px; padding:0; margin:-1px;
-      overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
-    }
-
-    /* Barra de volver */
-    .backbar{
-      position:fixed; left:50%; transform:translateX(-50%);
-      bottom:18px; z-index:4; display:none;
-    }
+    /* Barra volver */
+    .backbar{ position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:4; display:none }
     .backbar.show{ display:block }
-    .backbtn{
-      appearance:none; border:0; cursor:pointer; padding:10px 14px; border-radius:12px;
-      background:#141842; color:#e6e8ff; box-shadow: inset 0 0 0 1px #3f46a7;
-      font-weight:600;
-    }
+    .backbtn{ appearance:none; border:0; cursor:pointer; padding:10px 14px; border-radius:12px;
+      background:#141842; color:#e6e8ff; box-shadow: inset 0 0 0 1px #3f46a7; font-weight:600 }
 
-    /* Utilidad: ocultar con transición */
-    .hidden-soft{
-      opacity:0; visibility:hidden; transform: translateY(-6px) scale(.98);
-      transition: opacity .35s ease, transform .35s ease, visibility .35s ease;
-    }
+    .credits{ position:fixed; inset:auto 0 10px; display:flex; justify-content:center; font-size:12px; opacity:.7 }
+    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
   </style>
 </head>
 <body>
@@ -168,7 +113,7 @@
     <div class="glow" aria-hidden="true"></div>
     <div class="ribbon">💛 Septiembre vibes • Flores Amarillas</div>
 
-    <div class="card">
+    <div class="card" id="card">
       <h1>Para ti, un jardín de <span style="color:#ffe066;text-shadow:0 0 10px #ffe06655">flores amarillas</span></h1>
       <p class="sub">Porque los detalles bonitos también se programan. Toca el botón para “florecer”.</p>
       <div class="btns" id="btnGroup">
@@ -180,15 +125,13 @@
       </p>
     </div>
 
-    <!-- Jardín dinámico -->
     <div class="garden" id="garden" aria-hidden="true">
       <div class="ground" aria-hidden="true"></div>
     </div>
 
-    <span class="sr-only">Animación de flores amarillas brotando del suelo y balanceándose.</span>
+    <span class="sr-only">Ramo de flores amarillas con tallos, hojas y moño.</span>
   </div>
 
-  <!-- Botón para volver -->
   <div class="backbar" id="backbar">
     <button class="backbtn" id="resetBtn">Volver a los botones ↩️</button>
   </div>
@@ -196,58 +139,69 @@
   <div class="credits">Hecho con HTML + CSS + SVG + JS • by tú 💫</div>
 
   <script>
-    /* ======== Elementos ======== */
+    /* ===== refs ===== */
     const bloomBtn = document.getElementById('bloomBtn');
     const msgBtn   = document.getElementById('msgBtn');
     const msg      = document.getElementById('mensaje');
     const btnGroup = document.getElementById('btnGroup');
+    const ribbon   = document.querySelector('.ribbon');
+    const card     = document.getElementById('card');
+
     const garden   = document.getElementById('garden');
     const backbar  = document.getElementById('backbar');
     const resetBtn = document.getElementById('resetBtn');
-    const ribbon   = document.querySelector('.ribbon');
 
     let blooming = false;
     let resizeTimer = null;
 
-    /* ======== Utilidades ======== */
+    /* ===== helpers ===== */
     function showMessage(open){
       msg.style.display = open ? 'block' : 'none';
       msgBtn.setAttribute('aria-expanded', String(open));
       msgBtn.textContent = open ? 'Ocultar mensaje 🙈' : 'Mostrar mensaje 💬';
     }
-
     function clearFlowers(){
-      garden.querySelectorAll('svg.flower').forEach(el => el.remove());
+      garden.querySelectorAll('svg.flower, svg#bouquetDecor').forEach(el => el.remove());
     }
 
-    /* ======== Generación de flores ======== */
-    function createFlowers(count = 42){
+    /* ===== bouquet =====
+       Genera un ramo: flores agrupadas al centro con tallos y hojas,
+       papel kraft y moño.
+    =============================================== */
+    function createBouquet(count = 16){
       const width  = garden.clientWidth;
       const height = garden.clientHeight;
-      const groundTop = height * 0.62; // límite superior del suelo
+      const groundTop = height * 0.62;
 
+      const centerX = Math.round(width/2);
+      const clusterW = Math.min(420, width * 0.7); // ancho máximo del ramo
+
+      // Flores
       for(let i=0; i<count; i++){
-        // Distribución bonita
-        const x = Math.round( (i + Math.random()*0.7) / count * (width - 40) ) + 20;
-        const stemH = 100 + Math.floor(Math.random()*80);  // 100–180 px
-        const baseY = groundTop + 6 + Math.random()*18;
-        const scale = 0.85 + Math.random()*0.6;
-        const rot   = (Math.random()*6 - 3) + 'deg';
-        const delay = 60 * i;
+        // posición horizontal en “campana”
+        const t = (i + 0.5)/count; // 0..1
+        const spread = (Math.sin(Math.PI * t) ** 0.7); // más densidad al centro
+        const jitter = (Math.random()*2-1) * 0.12;
+        const x = centerX + ( (spread + jitter) - 0.5 ) * clusterW;
 
-        // Contenedor SVG
+        const stemH = 140 + Math.floor(Math.random()*90); // 140–230
+        const baseY = groundTop + 8 + Math.random()*14;
+        const scale = 0.9 + Math.random()*0.5;
+        const rot   = (Math.random()*10 - 5) + 'deg';
+        const delay = 50*i;
+
+        // SVG contenedor
         const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
         svg.setAttribute('class','flower');
-        svg.setAttribute('viewBox','0 0 200 220');
+        svg.setAttribute('viewBox','0 0 200 240');
         svg.style.left = (x - 100) + 'px';
-        svg.style.top  = (baseY - 180) + 'px';
+        svg.style.top  = (baseY - 200) + 'px';
         svg.style.setProperty('--r', rot);
 
-        // Grupo base en la "tierra"
         const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-        g.setAttribute('transform','translate(100,180)');
+        g.setAttribute('transform','translate(100,200)');
 
-        // Tallo
+        /* tallo */
         const stem = document.createElementNS('http://www.w3.org/2000/svg','rect');
         stem.setAttribute('x','-3');
         stem.setAttribute('y', String(-stemH));
@@ -257,26 +211,23 @@
         stem.setAttribute('fill','var(--stem)');
         g.appendChild(stem);
 
-        // Hojas
+        /* hojas (dos a distintas alturas) */
         const leaf1 = document.createElementNS('http://www.w3.org/2000/svg','path');
-        leaf1.setAttribute('d', `M-3,${-stemH*0.45} C-40,${-stemH*0.55} -50,${-stemH*0.25} -6,${-stemH*0.30} Z`);
-        leaf1.setAttribute('fill','var(--stem)');
-        leaf1.setAttribute('opacity','.9');
+        leaf1.setAttribute('d', `M-3,${-stemH*0.52} C-38,${-stemH*0.66} -50,${-stemH*0.36} -6,${-stemH*0.42} Z`);
+        leaf1.setAttribute('fill','var(--stem)'); leaf1.setAttribute('opacity','.9');
         g.appendChild(leaf1);
 
         const leaf2 = document.createElementNS('http://www.w3.org/2000/svg','path');
-        leaf2.setAttribute('d', `M3,${-stemH*0.28} C36,${-stemH*0.36} 50,${-stemH*0.10} 6,${-stemH*0.16} Z`);
-        leaf2.setAttribute('fill','var(--stem)');
-        leaf2.setAttribute('opacity','.85');
+        leaf2.setAttribute('d', `M3,${-stemH*0.30} C36,${-stemH*0.42} 50,${-stemH*0.18} 6,${-stemH*0.22} Z`);
+        leaf2.setAttribute('fill','var(--stem)'); leaf2.setAttribute('opacity','.85');
         g.appendChild(leaf2);
 
-        // Pétalos en la punta del tallo
+        /* pétalos */
         const petalsG = document.createElementNS('http://www.w3.org/2000/svg','g');
         petalsG.setAttribute('id','petalos');
         petalsG.setAttribute('style','transform-origin:0px -60px');
-        petalsG.setAttribute('transform', `translate(0, ${-stemH - 10})`);
+        petalsG.setAttribute('transform', `translate(0, ${-stemH - 14})`);
 
-        // Definición del pétalo
         const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
         const petalo = document.createElementNS('http://www.w3.org/2000/svg','path');
         petalo.setAttribute('id','petalo');
@@ -284,7 +235,6 @@
         defs.appendChild(petalo);
         g.appendChild(defs);
 
-        // Gradiente único por flor
         const grad = document.createElementNS('http://www.w3.org/2000/svg','radialGradient');
         const gradId = 'gradPetalo_' + Math.random().toString(36).slice(2,8);
         grad.setAttribute('id', gradId);
@@ -302,7 +252,7 @@
         ring.setAttribute('stroke','var(--accent-2)');
         ring.setAttribute('stroke-width','1.5');
 
-        for(let a=0; a<360; a+=30){
+        for(let a=0;a<360;a+=30){
           const u = document.createElementNS('http://www.w3.org/2000/svg','use');
           u.setAttributeNS('http://www.w3.org/1999/xlink','href','#petalo');
           u.setAttribute('transform',`rotate(${a})`);
@@ -310,69 +260,126 @@
         }
         petalsG.appendChild(ring);
 
-        // Centro + brillo
+        /* centro + brillo */
         const c1 = document.createElementNS('http://www.w3.org/2000/svg','circle');
-        c1.setAttribute('r','16'); c1.setAttribute('cy', String(-stemH - 18));
+        c1.setAttribute('r','16'); c1.setAttribute('cy', String(-stemH - 22));
         c1.setAttribute('fill','var(--center)'); c1.setAttribute('stroke','#5d4037'); c1.setAttribute('stroke-width','2');
         const c2 = document.createElementNS('http://www.w3.org/2000/svg','circle');
-        c2.setAttribute('r','10'); c2.setAttribute('cy', String(-stemH - 18));
+        c2.setAttribute('r','10'); c2.setAttribute('cy', String(-stemH - 22));
         c2.setAttribute('fill','#6d4c41'); c2.setAttribute('opacity','.35');
         const glow = document.createElementNS('http://www.w3.org/2000/svg','circle');
-        glow.setAttribute('r','4'); glow.setAttribute('cx','8'); glow.setAttribute('cy', String(-stemH - 24));
+        glow.setAttribute('r','4'); glow.setAttribute('cx','8'); glow.setAttribute('cy', String(-stemH - 28));
         glow.setAttribute('fill','var(--glow)'); glow.setAttribute('opacity','.9');
 
         g.appendChild(petalsG); g.appendChild(c1); g.appendChild(c2); g.appendChild(glow);
         svg.appendChild(g);
         garden.appendChild(svg);
 
-        /* Animaciones */
-        // Brotar desde abajo
+        /* animaciones */
+        // crecer desde abajo
         svg.animate([
-          { transform: `translateY(40vh) scale(${0.6*scale}) rotate(var(--r))`, opacity: 0 },
-          { transform: `translateY(0)    scale(${scale})       rotate(var(--r))`, opacity: 1 }
-        ], { duration: 900 + delay, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards' });
+          { transform:`translateY(45vh) scale(${0.6*scale}) rotate(var(--r))`, opacity:0 },
+          { transform:`translateY(0)    scale(${scale})       rotate(var(--r))`, opacity:1 }
+        ], { duration: 850 + delay, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards' });
 
-        // Apertura de pétalos
+        // abrir pétalos
         petalsG.animate(
-          [{ transform:`translate(0, ${-stemH - 10}) scale(.72)` },
-           { transform:`translate(0, ${-stemH - 10}) scale(1)` }],
-          { duration: 700 + delay*0.2, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards', delay: 80 }
+          [{ transform:`translate(0, ${-stemH - 14}) scale(.72)`},
+           { transform:`translate(0, ${-stemH - 14}) scale(1)`}],
+          { duration: 650 + delay*0.2, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards', delay:80 }
         );
 
-        // Balanceo sutil continuo
-        const swayDur = 5200 + Math.random()*2200;
+        // balanceo
+        const swayDur = 4800 + Math.random()*2200;
         svg.animate(
           [
-            { transform: `translateY(0) scale(${scale}) rotate(calc(var(--r) - 2deg))` },
-            { transform: `translateY(-10px) scale(${scale}) rotate(calc(var(--r) + 2deg))` },
-            { transform: `translateY(0) scale(${scale}) rotate(calc(var(--r) - 2deg))` }
+            { transform:`translateY(0) scale(${scale}) rotate(calc(var(--r) - 2deg))` },
+            { transform:`translateY(-10px) scale(${scale}) rotate(calc(var(--r) + 2deg))` },
+            { transform:`translateY(0) scale(${scale}) rotate(calc(var(--r) - 2deg))` }
           ],
-          { duration: swayDur, iterations: Infinity, easing:'ease-in-out', delay: 900 + delay }
+          { duration: swayDur, iterations: Infinity, easing:'ease-in-out', delay:900 + delay }
         );
       }
+
+      // Decoración del ramo: papel + moño (un solo SVG centrado)
+      const decor = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      decor.setAttribute('id','bouquetDecor');
+      const decoW = Math.min(360, width*0.6);
+      const decoH = 200;
+      decor.setAttribute('viewBox','0 0 360 200');
+      decor.style.position = 'absolute';
+      decor.style.left = (centerX - decoW/2) + 'px';
+      decor.style.top  = (groundTop - 60) + 'px';
+      decor.style.width  = decoW + 'px';
+      decor.style.height = decoH + 'px';
+      decor.style.pointerEvents = 'none';
+
+      // Papel en forma de cono (triángulos superpuestos)
+      const paper = document.createElementNS('http://www.w3.org/2000/svg','path');
+      paper.setAttribute('d','M60,10 L300,10 L230,190 L130,190 Z'); // cono abierto
+      paper.setAttribute('fill','var(--paper)');
+      paper.setAttribute('stroke','#e7d997'); paper.setAttribute('stroke-width','2');
+      paper.setAttribute('opacity','0.9');
+
+      // Cinta: banda + moño
+      const band = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      band.setAttribute('x','110'); band.setAttribute('y','110');
+      band.setAttribute('width','140'); band.setAttribute('height','20'); band.setAttribute('rx','10');
+      band.setAttribute('fill','var(--ribbon)');
+      band.setAttribute('filter','drop-shadow(0 2px 2px rgba(0,0,0,.25))');
+
+      const bowLeft  = document.createElementNS('http://www.w3.org/2000/svg','path');
+      bowLeft.setAttribute('d','M140,120 C120,95 110,95 105,120 C110,140 125,140 140,120 Z');
+      bowLeft.setAttribute('fill','var(--ribbon)');
+      const bowRight = document.createElementNS('http://www.w3.org/2000/svg','path');
+      bowRight.setAttribute('d','M220,120 C240,95 250,95 255,120 C250,140 235,140 220,120 Z');
+      bowRight.setAttribute('fill','var(--ribbon)');
+      const knot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      knot.setAttribute('cx','180'); knot.setAttribute('cy','120'); knot.setAttribute('r','10');
+      knot.setAttribute('fill','#ff6868');
+
+      // colas de la cinta
+      const tail1 = document.createElementNS('http://www.w3.org/2000/svg','path');
+      tail1.setAttribute('d','M170,130 L160,170 L180,150 Z');
+      tail1.setAttribute('fill','var(--ribbon)');
+      const tail2 = document.createElementNS('http://www.w3.org/2000/svg','path');
+      tail2.setAttribute('d','M190,130 L200,170 L180,150 Z');
+      tail2.setAttribute('fill','var(--ribbon)');
+
+      decor.appendChild(paper);
+      decor.appendChild(band); decor.appendChild(bowLeft); decor.appendChild(bowRight); decor.appendChild(knot);
+      decor.appendChild(tail1); decor.appendChild(tail2);
+
+      garden.appendChild(decor);
+
+      // pequeña entrada del decor
+      decor.animate([{opacity:0, transform:'translateY(20px)'},{opacity:1, transform:'translateY(0)'}],
+        {duration:500, easing:'ease-out', fill:'forwards', delay:700});
     }
 
-    /* ======== Control principal ======== */
+    /* ===== control ===== */
     function setBloom(open){
       if(open){
-        btnGroup.classList.add('hidden');     // oculta botones
-        ribbon.classList.add('hidden-soft');  // oculta cinta
-        msg.classList.add('hidden-soft');     // oculta mensaje
+        // ocultar todo lo “flotante”
+        document.getElementById('btnGroup').classList.add('hidden');
+        document.querySelector('.ribbon').classList.add('hidden-soft');
+        document.getElementById('card').classList.add('hidden-soft');
         backbar.classList.add('show');
-        createFlowers(42);
+        clearFlowers();
+        createBouquet(18); // ramo
       }else{
         clearFlowers();
-        btnGroup.classList.remove('hidden');
-        ribbon.classList.remove('hidden-soft');
-        msg.classList.remove('hidden-soft');
+        document.getElementById('btnGroup').classList.remove('hidden');
+        document.querySelector('.ribbon').classList.remove('hidden-soft');
+        document.getElementById('card').classList.remove('hidden-soft');
         backbar.classList.remove('show');
-        showMessage(true); // vuelve a mostrar el mensaje
+        showMessage(true);
       }
       blooming = open;
       bloomBtn.textContent = blooming ? 'Cerrar pétalos 🌙' : 'Hacer florecer ✨';
     }
 
-    /* ======== Eventos ======== */
+    /* ===== events ===== */
     bloomBtn.addEventListener('click', ()=> setBloom(!blooming));
     resetBtn.addEventListener('click', ()=> setBloom(false));
 
@@ -381,17 +388,15 @@
       showMessage(open);
     });
 
-    // Reordenar flores si cambia el tamaño de la ventana mientras está florecido
+    // si cambia tamaño, rearmar el ramo
     window.addEventListener('resize', ()=>{
       if(!blooming) return;
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(()=>{ clearFlowers(); createFlowers(42); }, 150);
+      resizeTimer = setTimeout(()=>{ clearFlowers(); createBouquet(18); }, 120);
     });
 
-    // Estado inicial del mensaje
-    window.addEventListener('load', ()=>{
-      showMessage(true); // visible al entrar
-    });
+    // inicio
+    window.addEventListener('load', ()=> showMessage(true));
   </script>
 </body>
 </html>
