@@ -95,8 +95,12 @@
     .glow::after { width:420px; height:420px; bottom:-60px; right:-60px; animation-delay:1.6s }
     @keyframes twinkle{ 0%,100%{opacity:.65; filter:blur(0)} 50%{opacity:1; filter:blur(.2px)} }
 
-    /* Flor individual */
-    svg.flower{ position:absolute; width:200px; height:240px; transform-origin: 50% 85%; will-change: transform, opacity; opacity:0 }
+    /* SVG del ramo */
+    svg.bouquet{
+      position:absolute;
+      filter: drop-shadow(0 6px 12px #0006);
+      pointer-events:none;
+    }
 
     /* Barra volver */
     .backbar{ position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:4; display:none }
@@ -111,7 +115,7 @@
 <body>
   <div class="wrap">
     <div class="glow" aria-hidden="true"></div>
-    <div class="ribbon">❤️ Yazuri</div>
+    <div class="ribbon">💛 Yazuri</div>
 
     <div class="card" id="card">
       <h1>Para ti, un jardín de <span style="color:#ffe066;text-shadow:0 0 10px #ffe06655">flores amarillas</span></h1>
@@ -136,7 +140,7 @@
     <button class="backbtn" id="resetBtn">Volver a los botones ↩️</button>
   </div>
 
-  <div class="credits">Hecho con HTML + CSS + SVG + JS • by tú 💫</div>
+  <div class="credits">Levanx</div>
 
   <script>
     /* ===== refs ===== */
@@ -161,200 +165,190 @@
       msgBtn.textContent = open ? 'Ocultar mensaje 🙈' : 'Mostrar mensaje 💬';
     }
     function clearFlowers(){
-      garden.querySelectorAll('svg.flower, svg#bouquetDecor').forEach(el => el.remove());
+      garden.querySelectorAll('svg.bouquet').forEach(el => el.remove());
     }
 
     /* ===== bouquet =====
-       Genera un ramo: flores agrupadas al centro con tallos y hojas,
-       papel kraft y moño.
+       Ramo en un solo SVG con clip-path para mantener verdes dentro del papel
     =============================================== */
-    function createBouquet(count = 16){
+    function createBouquet(count = 18){
       const width  = garden.clientWidth;
       const height = garden.clientHeight;
       const groundTop = height * 0.62;
 
+      // Lienzo del ramo (un solo SVG centrado)
+      const stageW = Math.min(520, width * 0.85);
+      const stageH = 420;
       const centerX = Math.round(width/2);
-      const clusterW = Math.min(420, width * 0.7); // ancho máximo del ramo
 
-      // Flores
-      for(let i=0; i<count; i++){
-        // posición horizontal en “campana”
-        const t = (i + 0.5)/count; // 0..1
-        const spread = (Math.sin(Math.PI * t) ** 0.7); // más densidad al centro
-        const jitter = (Math.random()*2-1) * 0.12;
-        const x = centerX + ( (spread + jitter) - 0.5 ) * clusterW;
+      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.classList.add('bouquet');
+      svg.setAttribute('viewBox', '0 0 520 420');
+      svg.style.left = (centerX - stageW/2) + 'px';
+      svg.style.top  = (groundTop - 240) + 'px';
+      svg.style.width  = stageW + 'px';
+      svg.style.height = stageH + 'px';
 
-        const stemH = 140 + Math.floor(Math.random()*90); // 140–230
-        const baseY = groundTop + 8 + Math.random()*14;
-        const scale = 0.9 + Math.random()*0.5;
-        const rot   = (Math.random()*10 - 5) + 'deg';
-        const delay = 50*i;
+      // ===== defs: clip del papel (cono)
+      const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
 
-        // SVG contenedor
-        const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-        svg.setAttribute('class','flower');
-        svg.setAttribute('viewBox','0 0 200 240');
-        svg.style.left = (x - 100) + 'px';
-        svg.style.top  = (baseY - 200) + 'px';
-        svg.style.setProperty('--r', rot);
+      // Cono del papel (mismo shape para clip y para dibujarlo)
+      const conePathD = 'M90,36 L430,36 L354,400 L166,400 Z';
+      const clip = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
+      clip.setAttribute('id','coneClip');
+      const coneShape = document.createElementNS('http://www.w3.org/2000/svg','path');
+      coneShape.setAttribute('d', conePathD);
+      clip.appendChild(coneShape);
 
-        const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-        g.setAttribute('transform','translate(100,200)');
+      defs.appendChild(clip);
+      svg.appendChild(defs);
 
-        /* tallo */
+      // ===== capas
+      const gGreens = document.createElementNS('http://www.w3.org/2000/svg','g');
+      gGreens.setAttribute('clip-path','url(#coneClip)');
+
+      const gPaper  = document.createElementNS('http://www.w3.org/2000/svg','g');
+      const gHeads  = document.createElementNS('http://www.w3.org/2000/svg','g');
+
+      // ===== distribución horizontal de flores
+      const baseY = 380;                 // “suelo” dentro del SVG
+      const clusterW = 360;              // ancho del bouquet
+      const leftX  = 80 + (520 - clusterW)/2;
+      const rightX = 520 - leftX;
+
+      for(let i=0;i<count;i++){
+        const t = (i + 0.5)/count;                 // 0..1
+        const spread = Math.sin(Math.PI*t) ** 0.85; // más denso al centro
+        const jitter = (Math.random()*2-1) * 0.07;  // leve aleatorio
+        const x = leftX + ( (spread + jitter) * (rightX - leftX) );
+
+        const stemH = 150 + Math.random()*80; // 150–230
+        const scale = 0.9 + Math.random()*0.45;
+        const rot   = (Math.random()*10 - 5);
+
+        // === Verdes (tallo + hojas) DENTRO del clip
+        const gGreen = document.createElementNS('http://www.w3.org/2000/svg','g');
+        gGreen.setAttribute('transform', `translate(${x}, ${baseY}) rotate(${rot}) scale(${scale})`);
+
         const stem = document.createElementNS('http://www.w3.org/2000/svg','rect');
-        stem.setAttribute('x','-3');
-        stem.setAttribute('y', String(-stemH));
-        stem.setAttribute('width','6');
-        stem.setAttribute('height', String(stemH));
-        stem.setAttribute('rx','3');
-        stem.setAttribute('fill','var(--stem)');
-        g.appendChild(stem);
+        stem.setAttribute('x','-3'); stem.setAttribute('y', String(-stemH));
+        stem.setAttribute('width','6'); stem.setAttribute('height', String(stemH));
+        stem.setAttribute('rx','3'); stem.setAttribute('fill','var(--stem)');
 
-        /* hojas (dos a distintas alturas) */
         const leaf1 = document.createElementNS('http://www.w3.org/2000/svg','path');
         leaf1.setAttribute('d', `M-3,${-stemH*0.52} C-38,${-stemH*0.66} -50,${-stemH*0.36} -6,${-stemH*0.42} Z`);
         leaf1.setAttribute('fill','var(--stem)'); leaf1.setAttribute('opacity','.9');
-        g.appendChild(leaf1);
 
         const leaf2 = document.createElementNS('http://www.w3.org/2000/svg','path');
         leaf2.setAttribute('d', `M3,${-stemH*0.30} C36,${-stemH*0.42} 50,${-stemH*0.18} 6,${-stemH*0.22} Z`);
         leaf2.setAttribute('fill','var(--stem)'); leaf2.setAttribute('opacity','.85');
-        g.appendChild(leaf2);
 
-        /* pétalos */
-        const petalsG = document.createElementNS('http://www.w3.org/2000/svg','g');
-        petalsG.setAttribute('id','petalos');
-        petalsG.setAttribute('style','transform-origin:0px -60px');
-        petalsG.setAttribute('transform', `translate(0, ${-stemH - 14})`);
+        gGreen.appendChild(stem); gGreen.appendChild(leaf1); gGreen.appendChild(leaf2);
+        gGreens.appendChild(gGreen);
 
-        const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+        // === Cabeza de flor (SIN clip, por encima del papel)
+        const gHead = document.createElementNS('http://www.w3.org/2000/svg','g');
+        gHead.setAttribute('transform', `translate(${x}, ${baseY - stemH - 14}) rotate(${rot}) scale(${scale})`);
+
+        // pétalo base
         const petalo = document.createElementNS('http://www.w3.org/2000/svg','path');
-        petalo.setAttribute('id','petalo');
+        petalo.setAttribute('id', `petalo_${i}`);
         petalo.setAttribute('d','M0,-60 C12,-50 12,-20 0,0 C-12,-20 -12,-50 0,-60Z');
-        defs.appendChild(petalo);
-        g.appendChild(defs);
 
+        // gradiente propio (evita colisión de IDs)
         const grad = document.createElementNS('http://www.w3.org/2000/svg','radialGradient');
         const gradId = 'gradPetalo_' + Math.random().toString(36).slice(2,8);
         grad.setAttribute('id', gradId);
         grad.setAttribute('cx','50%'); grad.setAttribute('cy','30%'); grad.setAttribute('r','70%');
-        const s1 = document.createElementNS('http://www.w3.org/2000/svg','stop'); s1.setAttribute('offset','0%');  s1.setAttribute('stop-color','#fff59d');
-        const s2 = document.createElementNS('http://www.w3.org/2000/svg','stop'); s2.setAttribute('offset','45%'); s2.setAttribute('stop-color','var(--accent)');
-        const s3 = document.createElementNS('http://www.w3.org/2000/svg','stop'); s3.setAttribute('offset','100%'); s3.setAttribute('stop-color','#e6ac00');
-        const defs2 = document.createElementNS('http://www.w3.org/2000/svg','defs');
-        grad.appendChild(s1); grad.appendChild(s2); grad.appendChild(s3);
-        defs2.appendChild(grad);
-        svg.appendChild(defs2);
+        [['0%','#fff59d'],['45%','var(--accent)'],['100%','#e6ac00']].forEach(([o,c])=>{
+          const s = document.createElementNS('http://www.w3.org/2000/svg','stop');
+          s.setAttribute('offset',o); s.setAttribute('stop-color',c); grad.appendChild(s);
+        });
+        defs.appendChild(grad);
 
         const ring = document.createElementNS('http://www.w3.org/2000/svg','g');
         ring.setAttribute('fill', `url(#${gradId})`);
         ring.setAttribute('stroke','var(--accent-2)');
         ring.setAttribute('stroke-width','1.5');
-
         for(let a=0;a<360;a+=30){
           const u = document.createElementNS('http://www.w3.org/2000/svg','use');
-          u.setAttributeNS('http://www.w3.org/1999/xlink','href','#petalo');
+          u.setAttributeNS('http://www.w3.org/1999/xlink','href', `#${petalo.id}`);
           u.setAttribute('transform',`rotate(${a})`);
           ring.appendChild(u);
         }
-        petalsG.appendChild(ring);
+        gHead.appendChild(petalo);
+        gHead.appendChild(ring);
 
-        /* centro + brillo */
+        // centro + brillo
         const c1 = document.createElementNS('http://www.w3.org/2000/svg','circle');
-        c1.setAttribute('r','16'); c1.setAttribute('cy', String(-stemH - 22));
+        c1.setAttribute('r','16'); c1.setAttribute('cy','-22');
         c1.setAttribute('fill','var(--center)'); c1.setAttribute('stroke','#5d4037'); c1.setAttribute('stroke-width','2');
         const c2 = document.createElementNS('http://www.w3.org/2000/svg','circle');
-        c2.setAttribute('r','10'); c2.setAttribute('cy', String(-stemH - 22));
+        c2.setAttribute('r','10'); c2.setAttribute('cy','-22');
         c2.setAttribute('fill','#6d4c41'); c2.setAttribute('opacity','.35');
         const glow = document.createElementNS('http://www.w3.org/2000/svg','circle');
-        glow.setAttribute('r','4'); glow.setAttribute('cx','8'); glow.setAttribute('cy', String(-stemH - 28));
+        glow.setAttribute('r','4'); glow.setAttribute('cx','8'); glow.setAttribute('cy','-28');
         glow.setAttribute('fill','var(--glow)'); glow.setAttribute('opacity','.9');
 
-        g.appendChild(petalsG); g.appendChild(c1); g.appendChild(c2); g.appendChild(glow);
-        svg.appendChild(g);
-        garden.appendChild(svg);
-
-        /* animaciones */
-        // crecer desde abajo
-        svg.animate([
-          { transform:`translateY(45vh) scale(${0.6*scale}) rotate(var(--r))`, opacity:0 },
-          { transform:`translateY(0)    scale(${scale})       rotate(var(--r))`, opacity:1 }
-        ], { duration: 850 + delay, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards' });
-
-        // abrir pétalos
-        petalsG.animate(
-          [{ transform:`translate(0, ${-stemH - 14}) scale(.72)`},
-           { transform:`translate(0, ${-stemH - 14}) scale(1)`}],
-          { duration: 650 + delay*0.2, easing:'cubic-bezier(.2,.8,.2,1)', fill:'forwards', delay:80 }
-        );
+        gHead.appendChild(c1); gHead.appendChild(c2); gHead.appendChild(glow);
+        gHeads.appendChild(gHead);
 
         // balanceo
         const swayDur = 4800 + Math.random()*2200;
-        svg.animate(
+        gHead.animate(
           [
-            { transform:`translateY(0) scale(${scale}) rotate(calc(var(--r) - 2deg))` },
-            { transform:`translateY(-10px) scale(${scale}) rotate(calc(var(--r) + 2deg))` },
-            { transform:`translateY(0) scale(${scale}) rotate(calc(var(--r) - 2deg))` }
+            { transform:`translate(${x}px, ${baseY - stemH - 14}px) rotate(${rot-2}deg) scale(${scale})` },
+            { transform:`translate(${x}px, ${baseY - stemH - 24}px) rotate(${rot+2}deg) scale(${scale})` },
+            { transform:`translate(${x}px, ${baseY - stemH - 14}px) rotate(${rot-2}deg) scale(${scale})` }
           ],
-          { duration: swayDur, iterations: Infinity, easing:'ease-in-out', delay:900 + delay }
+          { duration: swayDur, iterations: Infinity, easing:'ease-in-out', delay: 400 + i*40 }
         );
       }
 
-      // Decoración del ramo: papel + moño (un solo SVG centrado)
-      const decor = document.createElementNS('http://www.w3.org/2000/svg','svg');
-      decor.setAttribute('id','bouquetDecor');
-      const decoW = Math.min(360, width*0.6);
-      const decoH = 200;
-      decor.setAttribute('viewBox','0 0 360 200');
-      decor.style.position = 'absolute';
-      decor.style.left = (centerX - decoW/2) + 'px';
-      decor.style.top  = (groundTop - 60) + 'px';
-      decor.style.width  = decoW + 'px';
-      decor.style.height = decoH + 'px';
-      decor.style.pointerEvents = 'none';
-
-      // Papel en forma de cono (triángulos superpuestos)
+      // ===== papel (entre verdes y cabezas)
       const paper = document.createElementNS('http://www.w3.org/2000/svg','path');
-      paper.setAttribute('d','M60,10 L300,10 L230,190 L130,190 Z'); // cono abierto
+      paper.setAttribute('d', conePathD);
       paper.setAttribute('fill','var(--paper)');
       paper.setAttribute('stroke','#e7d997'); paper.setAttribute('stroke-width','2');
       paper.setAttribute('opacity','0.9');
+      gPaper.appendChild(paper);
 
-      // Cinta: banda + moño
+      // ===== cinta
       const band = document.createElementNS('http://www.w3.org/2000/svg','rect');
-      band.setAttribute('x','110'); band.setAttribute('y','110');
-      band.setAttribute('width','140'); band.setAttribute('height','20'); band.setAttribute('rx','10');
+      band.setAttribute('x','180'); band.setAttribute('y','250');
+      band.setAttribute('width','160'); band.setAttribute('height','22'); band.setAttribute('rx','11');
       band.setAttribute('fill','var(--ribbon)');
-      band.setAttribute('filter','drop-shadow(0 2px 2px rgba(0,0,0,.25))');
 
-      const bowLeft  = document.createElementNS('http://www.w3.org/2000/svg','path');
-      bowLeft.setAttribute('d','M140,120 C120,95 110,95 105,120 C110,140 125,140 140,120 Z');
-      bowLeft.setAttribute('fill','var(--ribbon)');
-      const bowRight = document.createElementNS('http://www.w3.org/2000/svg','path');
-      bowRight.setAttribute('d','M220,120 C240,95 250,95 255,120 C250,140 235,140 220,120 Z');
-      bowRight.setAttribute('fill','var(--ribbon)');
+      const bowL = document.createElementNS('http://www.w3.org/2000/svg','path');
+      bowL.setAttribute('d','M210,262 C190,236 180,236 175,262 C180,282 195,282 210,262 Z');
+      bowL.setAttribute('fill','var(--ribbon)');
+      const bowR = document.createElementNS('http://www.w3.org/2000/svg','path');
+      bowR.setAttribute('d','M290,262 C310,236 320,236 325,262 C320,282 305,282 290,262 Z');
+      bowR.setAttribute('fill','var(--ribbon)');
       const knot = document.createElementNS('http://www.w3.org/2000/svg','circle');
-      knot.setAttribute('cx','180'); knot.setAttribute('cy','120'); knot.setAttribute('r','10');
+      knot.setAttribute('cx','260'); knot.setAttribute('cy','262'); knot.setAttribute('r','10');
       knot.setAttribute('fill','#ff6868');
 
-      // colas de la cinta
       const tail1 = document.createElementNS('http://www.w3.org/2000/svg','path');
-      tail1.setAttribute('d','M170,130 L160,170 L180,150 Z');
+      tail1.setAttribute('d','M250,272 L238,310 L258,290 Z');
       tail1.setAttribute('fill','var(--ribbon)');
       const tail2 = document.createElementNS('http://www.w3.org/2000/svg','path');
-      tail2.setAttribute('d','M190,130 L200,170 L180,150 Z');
+      tail2.setAttribute('d','M270,272 L282,310 L262,290 Z');
       tail2.setAttribute('fill','var(--ribbon)');
 
-      decor.appendChild(paper);
-      decor.appendChild(band); decor.appendChild(bowLeft); decor.appendChild(bowRight); decor.appendChild(knot);
-      decor.appendChild(tail1); decor.appendChild(tail2);
+      // ===== orden de capas dentro del SVG
+      svg.appendChild(gGreens);   // 1) verdes recortados al cono
+      svg.appendChild(gPaper);    // 2) papel
+      svg.appendChild(band);      // 3) banda
+      svg.appendChild(bowL); svg.appendChild(bowR); svg.appendChild(knot);
+      svg.appendChild(tail1); svg.appendChild(tail2);
+      svg.appendChild(gHeads);    // 4) cabezas por encima
 
-      garden.appendChild(decor);
+      garden.appendChild(svg);
 
-      // pequeña entrada del decor
-      decor.animate([{opacity:0, transform:'translateY(20px)'},{opacity:1, transform:'translateY(0)'}],
-        {duration:500, easing:'ease-out', fill:'forwards', delay:700});
+      // pequeña entrada del conjunto
+      svg.animate([{opacity:0, transform:'translateY(20px)'},{opacity:1, transform:'translateY(0)'}],
+        {duration:600, easing:'ease-out', fill:'forwards'});
     }
 
     /* ===== control ===== */
