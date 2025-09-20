@@ -82,12 +82,17 @@
     clip-path:polygon(0 100%, 16% 0, 33% 100%, 50% 0, 66% 100%, 83% 0, 100% 100%);
   }
 
-  /* Corazones */
-  .heart{--x:50%; position:absolute; left:var(--x); bottom:170px; width:20px; height:20px;
-    transform:translateX(-50%) rotate(-45deg); background:var(--heart); animation:floatUp 6s ease-in infinite; opacity:.85}
-  .heart:before,.heart:after{content:""; position:absolute; width:20px; height:20px; border-radius:50%; background:inherit}
-  .heart:before{top:-10px; left:0} .heart:after{left:10px; top:0}
-  @keyframes floatUp{0%{transform:translate(-50%,0) rotate(-45deg); opacity:0}10%{opacity:.9}100%{transform:translate(-50%,-220px) rotate(-45deg); opacity:0}}
+  /* Soles flotantes */
+  .sun-float{
+    --x:50%; position:absolute; left:var(--x); bottom:170px;
+    width:26px; height:26px; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, #fff9c4 0 40%, #ffeb3b 41% 100%);
+    box-shadow:0 0 12px rgba(255,235,59,.6), inset 0 0 6px rgba(255,255,255,.8);
+    transform:translateX(-50%);
+    animation:floatUp 7s ease-in infinite;
+    opacity:.9;
+  }
+  @keyframes floatUp{0%{transform:translate(-50%,0); opacity:0}10%{opacity:.9}100%{transform:translate(-50%,-220px); opacity:0}}
 
   /* Texto en la tierra */
   .floating-note{
@@ -108,11 +113,14 @@
 </style>
 </head>
 <body>
+  <!-- Sol fijo en el cielo -->
+  <div class="sun" aria-hidden="true"></div>
+
   <!-- Tarjeta -->
   <section class="card">
     <h1 class="title">Un jardín de <span class="highlight">tulipanes amarillos</span> para ti 🌷</h1>
     <p class="subtitle">Nunca dejes que tu brillo se apague. Verte feliz es una alegría para mí ✨</p>
-    <button class="btn" id="toggleHearts">Lanzar corazoncitos</button>
+    <button class="btn" id="toggleSuns">Lanzar soles</button>
   </section>
 
   <!-- Jardín -->
@@ -194,21 +202,21 @@
     let t; return ()=>{ clearTimeout(t); t=setTimeout(renderGarden,150); };
   })());
 
-  // Corazones
-  const btn = document.getElementById('toggleHearts');
-  let heartsOn=false, timer=null;
-  function spawnHeart(){
-    const h = document.createElement('div');
-    h.className='heart';
-    h.style.setProperty('--x', (10+Math.random()*80)+'%');
-    h.style.animationDuration = (4+Math.random()*3)+'s';
-    garden.appendChild(h);
-    setTimeout(()=>h.remove(),8000);
+  // Soles flotantes
+  const btn = document.getElementById('toggleSuns');
+  let sunsOn=false, timer=null;
+  function spawnSun(){
+    const s = document.createElement('div');
+    s.className='sun-float';
+    s.style.setProperty('--x', (10+Math.random()*80)+'%');
+    s.style.animationDuration = (5+Math.random()*3)+'s';
+    garden.appendChild(s);
+    setTimeout(()=>s.remove(),8000);
   }
   btn.addEventListener('click', ()=>{
-    heartsOn = !heartsOn;
-    btn.textContent = heartsOn ? 'Detener corazoncitos' : 'Lanzar corazoncitos';
-    if(heartsOn){ spawnHeart(); timer=setInterval(spawnHeart,900) } else { clearInterval(timer) }
+    sunsOn = !sunsOn;
+    btn.textContent = sunsOn ? 'Detener soles' : 'Lanzar soles';
+    if(sunsOn){ spawnSun(); timer=setInterval(spawnSun,1000) } else { clearInterval(timer) }
   });
 </script>
 </body>
